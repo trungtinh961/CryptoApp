@@ -26,7 +26,6 @@ namespace CryptoApp
         public MainWindow()
         {
             InitializeComponent();
-            txtNameFile.Text = HashMD5("C:\\Users\\Trung Tinh\\Desktop\\key.txt");
         }
 
         private void btnOpenFile_Click(object sender, RoutedEventArgs e)
