@@ -20,7 +20,7 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="17" Margin="107,57,0,0" VerticalAlignment="Top" Width="240">
             <RadioButton Name="rbtnDES" Content="DES" Margin="0,0,0,-0.2" Width="75"/>
             <RadioButton Name="rbtnAES" Content="AES" Margin="0,0,0,-0.2" Width="75"/>
-            <RadioButton Name="rbtnMD5" Content="MD5" Margin="0,0,0,-0.2" Width="75"/>
+            <RadioButton Name="rbtnSHA256" Content="SHA256" Margin="0,0,0,-0.2" Width="75"/>
         </StackPanel>
 
         <Label Content="Chọn chức năng" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,76,0,0" Width="103"/>
