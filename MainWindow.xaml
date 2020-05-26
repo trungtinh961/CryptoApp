@@ -5,32 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CryptoApp"
         mc:Ignorable="d"
-        Title="Cryptography" Height="204.4" Width="452"
+        Title="Cryptography" Height="273.2" Width="549.6"
         Background="LightGray">
-    <Grid>
+    <Grid Margin="0,10,0,-0.2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Label Content="Tệp cần xử lí" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,2,0,0"/>
-        <TextBox Name="txtNameFile" HorizontalAlignment="Left" Height="17" Margin="107,6,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="240"/>
-        <Button Name="btnOpenFile" Content="Tìm tệp..." HorizontalAlignment="Left" Margin="352,5,0,0" VerticalAlignment="Top" Width="75" Click="btnOpenFile_Click" />
+        <TextBox Name="txtNameFile" HorizontalAlignment="Left" Height="17" Margin="118,6,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="328"/>
+        <Button Name="btnOpenFile" Content="Tìm tệp..." HorizontalAlignment="Left" Margin="451,4,0,0" VerticalAlignment="Top" Width="75" Click="btnOpenFile_Click" />
 
         <Label Content="Tệp chứa khóa" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,26,0,0" Width="103"/>
-        <TextBox Name="txtOpenKey" HorizontalAlignment="Left" Height="17" Margin="107,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="240"/>
-        <Button Name="btnOpenKey" Content="Tìm tệp..." HorizontalAlignment="Left" Margin="353,30,0,0" VerticalAlignment="Top" Width="75" Click="btnOpenKey_Click"/>
+        <TextBox Name="txtOpenKey" HorizontalAlignment="Left" Height="17" Margin="118,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="328"/>
+        <Button Name="btnOpenKey" Content="Tìm tệp..." HorizontalAlignment="Left" Margin="451,30,0,0" VerticalAlignment="Top" Width="75" Click="btnOpenKey_Click"/>
 
-        <Label Content="Chọn giải thuật" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,51,0,0" Width="103"/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="17" Margin="107,57,0,0" VerticalAlignment="Top" Width="240">
-            <RadioButton Name="rbtnDES" Content="DES" Margin="0,0,0,-0.2" Width="75"/>
-            <RadioButton Name="rbtnAES" Content="AES" Margin="0,0,0,-0.2" Width="75"/>
-            <RadioButton Name="rbtnSHA256" Content="SHA256" Margin="0,0,0,-0.2" Width="75"/>
+        <Label Content="Chọn giải thuật" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,75,0,0" Width="103"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="17" Margin="118,81,0,0" VerticalAlignment="Top" Width="328">
+            <RadioButton Name="rbtnDES" Content="DES" Margin="0,0,0,-0.2" Width="100"/>
+            <RadioButton Name="rbtnAES" Content="AES" Margin="0,0,0,-0.2" Width="100"/>
+            <RadioButton Name="rbtnSHA256" Content="SHA256" Margin="0,0,0,-0.2" Width="100" Checked="rbtnSHA256_Checked"/>
         </StackPanel>
 
-        <Label Content="Chọn chức năng" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,76,0,0" Width="103"/>
-        <ProgressBar HorizontalAlignment="Left" Height="10" Margin="10,149,0,0" VerticalAlignment="Top" Width="417"/>
-        <Button Name="btnStart" Content="Bắt đầu" HorizontalAlignment="Left" Margin="172,118,0,0" VerticalAlignment="Top" Width="75" Click="btnStart_Click"/>
+        <Label Content="Chọn chức năng" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50,0,0" Width="103"/>
+        <ProgressBar Name="prgBar" HorizontalAlignment="Left" Height="18" Margin="73,149,0,0" VerticalAlignment="Top" Width="453"/>
+        <Button Name="btnStart" Content="Bắt đầu" Margin="230,113,231,0" VerticalAlignment="Top" Click="btnStart_Click"/>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="17" Margin="107,82,0,0" VerticalAlignment="Top" Width="240">
-            <RadioButton Name="rbtnEncrypt" Content="Mã hóa" Margin="0,0,0,-0.2" Width="75"/>
-            <RadioButton Name="rbtnDecrypt" Content="Giải mã" Margin="0,0,0,-0.2" Width="75"/>
-            <RadioButton Name="rbtnHash" Content="Băm" Margin="0,0,0,-0.2" Width="75"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="17" Margin="118,56,0,0" VerticalAlignment="Top" Width="328">
+            <RadioButton Name="rbtnEncrypt" Content="Mã hóa" Margin="0,0,0,-0.2" Width="100"/>
+            <RadioButton Name="rbtnDecrypt" Content="Giải mã" Margin="0,0,0,-0.2" Width="100"/>
+            <RadioButton Name="rbtnHash" Content="Băm" Margin="0,0,0,-0.2" Width="100" Checked="rbtnHash_Checked"/>
         </StackPanel>
+        <ProgressBar Name="prgBar_hash" HorizontalAlignment="Left" Height="18" Margin="73,180,0,0" VerticalAlignment="Top" Width="453" />
+        <Label Content="Mã hóa" HorizontalAlignment="Left" Margin="10,143,0,0" VerticalAlignment="Top"/>
+        <Label Content="Băm" HorizontalAlignment="Left" Margin="10,174,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
