@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace CryptoApp
 {
@@ -166,47 +167,51 @@ namespace CryptoApp
 
         private void Encrypt_DES(object sender, DoWorkEventArgs e)
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             string[] filename = (string[])e.Argument;
             string in_filename = filename[1];
             string key_filename = filename[0];
 
-            FileStream fsIn = new FileStream(in_filename, FileMode.Open, FileAccess.Read);
-            FileStream fsOut = new FileStream(CreateOutFile(in_filename, ".des"), FileMode.OpenOrCreate, FileAccess.Write);
+            FileStream fileIn = new FileStream(in_filename, FileMode.Open, FileAccess.Read);
+            FileStream fileOut = new FileStream(CreateOutFile(in_filename, ".des"), FileMode.OpenOrCreate, FileAccess.Write);
 
             double progress = 0;
-            double filesize = fsIn.Length;
+            double filesize = fileIn.Length;
 
             //Hash file input with SHA256            
-            new Thread(new ThreadStart(() => hashProgreess(in_filename, ".hashenc"))).Start();
-            
+            new Thread(new ThreadStart(() => hashProgreess(in_filename, ".hashenc"))).Start();            
 
             byte[] keyBytes = Encoding.UTF8.GetBytes(File.ReadAllText(key_filename));
 
-            // Hash the password with SHA256
-            keyBytes = SHA256.Create().ComputeHash(keyBytes);
-
             byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
 
-            PasswordDeriveBytes pdb = new PasswordDeriveBytes(keyBytes, saltBytes);
-            DES alg = DES.Create();
-            alg.Key = pdb.GetBytes(8);
-            alg.IV = pdb.GetBytes(8);
+            PasswordDeriveBytes passwordDerive = new PasswordDeriveBytes(keyBytes, saltBytes);
+            DES encryptor = DES.Create();
+            encryptor.Key = passwordDerive.GetBytes(8);
+            encryptor.IV = passwordDerive.GetBytes(8);
             try
             {
-                CryptoStream cs = new CryptoStream(fsOut, alg.CreateEncryptor(), CryptoStreamMode.Write);
+                CryptoStream cs = new CryptoStream(fileOut, encryptor.CreateEncryptor(), CryptoStreamMode.Write);
                 int bufferLen = chunksize;
                 byte[] buffer = new byte[bufferLen];
                 int bytesRead;
                 do
                 {
-                    bytesRead = fsIn.Read(buffer, 0, bufferLen);
+                    bytesRead = fileIn.Read(buffer, 0, bufferLen);
                     cs.Write(buffer, 0, bytesRead);
                     progress += chunksize;
                     (sender as BackgroundWorker).ReportProgress((int)(progress / filesize * 100));
                 } while (bytesRead != 0);
                 cs.Close();
-                fsIn.Close();
-                e.Result = "Mã hóa DES thành công!";
+                fileIn.Close();
+
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                        ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                e.Result = "Mã hóa DES thành công!\n" + "Thời gian xử lí: " + elapsedTime;
             }
             catch (CryptographicException ex)
             {
@@ -217,43 +222,48 @@ namespace CryptoApp
         
         private void Decrypt_DES(object sender, DoWorkEventArgs e)
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             string[] filename = (string[])e.Argument;
             string in_filename = filename[1];
             string key_filename = filename[0];
 
-            FileStream fsIn = new FileStream(in_filename, FileMode.Open, FileAccess.Read);
-            FileStream fsOut = new FileStream(Path.ChangeExtension(in_filename, null), FileMode.OpenOrCreate, FileAccess.Write);
+            FileStream fileIn = new FileStream(in_filename, FileMode.Open, FileAccess.Read);
+            FileStream fileOut = new FileStream(Path.ChangeExtension(in_filename, null), FileMode.OpenOrCreate, FileAccess.Write);
 
             double progress = 0;
-            double filesize = fsIn.Length;
+            double filesize = fileIn.Length;
 
             byte[] keyBytes = Encoding.UTF8.GetBytes(File.ReadAllText(key_filename));
 
-            // Hash the password with SHA256
-            keyBytes = SHA256.Create().ComputeHash(keyBytes);
-
             byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
 
-            PasswordDeriveBytes pdb = new PasswordDeriveBytes(keyBytes, saltBytes);
-            DES alg = DES.Create();
-            alg.Key = pdb.GetBytes(8);
-            alg.IV = pdb.GetBytes(8);
+            PasswordDeriveBytes passwordDerive = new PasswordDeriveBytes(keyBytes, saltBytes);
+            DES decryptor = DES.Create();
+            decryptor.Key = passwordDerive.GetBytes(8);
+            decryptor.IV = passwordDerive.GetBytes(8);
             try
             {
-                CryptoStream cs = new CryptoStream(fsOut, alg.CreateDecryptor(), CryptoStreamMode.Write);
+                CryptoStream cs = new CryptoStream(fileOut, decryptor.CreateDecryptor(), CryptoStreamMode.Write);
                 int bufferLen = chunksize;
                 byte[] buffer = new byte[bufferLen];
                 int bytesRead;
                 do
                 {
-                    bytesRead = fsIn.Read(buffer, 0, bufferLen);
+                    bytesRead = fileIn.Read(buffer, 0, bufferLen);
                     cs.Write(buffer, 0, bytesRead);
                     progress += chunksize;
                     (sender as BackgroundWorker).ReportProgress((int)(progress / filesize * 100));
                 } while (bytesRead != 0);
                 cs.Close();
-                fsIn.Close();
-                e.Result = "Giải mã DES thành công!";
+                fileIn.Close();
+
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                        ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                e.Result = "Giải mã DES thành công!\n" + "Thời gian xử lí: " + elapsedTime;
             }                
             catch (CryptographicException ex)
             {
@@ -264,46 +274,51 @@ namespace CryptoApp
 
         private void Encrypt_AES(object sender, DoWorkEventArgs e)
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             string[] filename = (string[])e.Argument;
             string in_filename = filename[1];
             string key_filename = filename[0];
 
-            FileStream fsIn = new FileStream(in_filename, FileMode.Open, FileAccess.Read);
-            FileStream fsOut = new FileStream(CreateOutFile(in_filename,".aes"), FileMode.OpenOrCreate, FileAccess.Write);
+            FileStream fileIn = new FileStream(in_filename, FileMode.Open, FileAccess.Read);
+            FileStream fileOut = new FileStream(CreateOutFile(in_filename,".aes"), FileMode.OpenOrCreate, FileAccess.Write);
 
             double progress = 0;
-            double filesize = fsIn.Length;
+            double filesize = fileIn.Length;
 
             //Hash file input with SHA256
             new Thread(new ThreadStart(() => hashProgreess(in_filename, ".hashenc"))).Start();
             
             byte[] keyBytes = Encoding.UTF8.GetBytes(File.ReadAllText(key_filename));
 
-            // Hash the password with SHA256
-            //keyBytes = SHA256.Create().ComputeHash(keyBytes);
-
             byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
 
-            PasswordDeriveBytes pdb = new PasswordDeriveBytes(keyBytes, saltBytes);
-            Aes alg = Aes.Create();
-            alg.Key = pdb.GetBytes(256/8);
-            alg.IV = pdb.GetBytes(128/8);
+            PasswordDeriveBytes passwordDerive = new PasswordDeriveBytes(keyBytes, saltBytes);
+            Aes encryptor = Aes.Create();
+            encryptor.Key = passwordDerive.GetBytes(256/8);
+            encryptor.IV = passwordDerive.GetBytes(128/8);
             try 
             { 
-                CryptoStream cs = new CryptoStream(fsOut, alg.CreateEncryptor(), CryptoStreamMode.Write);
+                CryptoStream cs = new CryptoStream(fileOut, encryptor.CreateEncryptor(), CryptoStreamMode.Write);
                 int bufferLen = chunksize;
                 byte[] buffer = new byte[bufferLen];
                 int bytesRead;
                 do
                 {
-                    bytesRead = fsIn.Read(buffer, 0, bufferLen);
+                    bytesRead = fileIn.Read(buffer, 0, bufferLen);
                     cs.Write(buffer, 0, bytesRead);
                     progress += chunksize;
                     (sender as BackgroundWorker).ReportProgress((int)(progress / filesize * 100));
                 } while (bytesRead != 0);
                 cs.Close();
-                fsIn.Close();
-                e.Result = "Mã hóa AES thành công!";
+                fileIn.Close();
+
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                        ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                e.Result = "Mã hóa AES thành công!\n" + "Thời gian xử lí: " + elapsedTime;
             }
             catch (CryptographicException ex)
             {
@@ -314,43 +329,48 @@ namespace CryptoApp
 
         private void Decrypt_AES(object sender, DoWorkEventArgs e)
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             string[] filename = (string[])e.Argument;
             string in_filename = filename[1];
             string key_filename = filename[0];
 
-            FileStream fsIn = new FileStream(in_filename, FileMode.Open, FileAccess.Read);
-            FileStream fsOut = new FileStream(Path.ChangeExtension(in_filename, null), FileMode.OpenOrCreate, FileAccess.Write);
+            FileStream fileIn = new FileStream(in_filename, FileMode.Open, FileAccess.Read);
+            FileStream fileOut = new FileStream(Path.ChangeExtension(in_filename, null), FileMode.OpenOrCreate, FileAccess.Write);
 
             double progress = 0;
-            double filesize = fsIn.Length;
+            double filesize = fileIn.Length;
 
             byte[] keyBytes = Encoding.UTF8.GetBytes(File.ReadAllText(key_filename));
 
-            // Hash the password with SHA256
-            //keyBytes = SHA256.Create().ComputeHash(keyBytes);
-
             byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
 
-            PasswordDeriveBytes pdb = new PasswordDeriveBytes(keyBytes, saltBytes);
-            Aes alg = Aes.Create();
-            alg.Key = pdb.GetBytes(256 / 8);
-            alg.IV = pdb.GetBytes(128 / 8);
+            PasswordDeriveBytes passwordDerive = new PasswordDeriveBytes(keyBytes, saltBytes);
+            Aes decryptor = Aes.Create();
+            decryptor.Key = passwordDerive.GetBytes(256 / 8);
+            decryptor.IV = passwordDerive.GetBytes(128 / 8);
             try
             {
-                CryptoStream cs = new CryptoStream(fsOut, alg.CreateDecryptor(), CryptoStreamMode.Write);
+                CryptoStream cs = new CryptoStream(fileOut, decryptor.CreateDecryptor(), CryptoStreamMode.Write);
                 int bufferLen = chunksize;
                 byte[] buffer = new byte[bufferLen];
                 int bytesRead;
                 do
                 {
-                    bytesRead = fsIn.Read(buffer, 0, bufferLen);
+                    bytesRead = fileIn.Read(buffer, 0, bufferLen);
                     cs.Write(buffer, 0, bytesRead);
                     progress += chunksize;
                     (sender as BackgroundWorker).ReportProgress((int)(progress / filesize * 100));
                 } while (bytesRead != 0);
                 cs.Close();
-                fsIn.Close();
-                e.Result = "Giải mã AES thành công!";
+                fileIn.Close();
+
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                        ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                e.Result = "Giải mã AES thành công!\n" + "Thời gian xử lí: " + elapsedTime;
             }
             catch(CryptographicException ex)
             {
@@ -396,6 +416,9 @@ namespace CryptoApp
 
         public void hashFileSHA256(object sender, DoWorkEventArgs e)
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             string[] name = (string[])e.Argument;
             string filename = name[0];
             string extension = name[1];
@@ -411,6 +434,12 @@ namespace CryptoApp
                 File.WriteAllText(CreateOutFile(filename, extension), result);
             else
                 File.WriteAllText(filename + extension, result);
+
+            stopWatch.Stop();
+            TimeSpan ts = stopWatch.Elapsed;
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                    ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+            e.Result = "Băm thành công!\n" + "Thời gian xử lí: " + elapsedTime;
         }
 
         void worker_ProgressChanged_hash(object sender, ProgressChangedEventArgs e)
@@ -427,7 +456,7 @@ namespace CryptoApp
             this.Dispatcher.Invoke(() =>
             {
                 prgBar_hash.IsIndeterminate = false;
-                MessageBox.Show("Băm thành công!");
+                MessageBox.Show((string)e.Result);
             });
             
         }
