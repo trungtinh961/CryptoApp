@@ -35,7 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>security_secure_protection_encryption_cryptography_crypto_system_electronic_lock-512.ico</ApplicationIcon>
+    <ApplicationIcon>18638841.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -99,6 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="security_secure_protection_encryption_cryptography_crypto_system_electronic_lock-512.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="18638841.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
