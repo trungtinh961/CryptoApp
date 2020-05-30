@@ -389,6 +389,7 @@ namespace CryptoApp
             txtNameFile.Text = "";
             txtOpenKey.Text = "";
             MessageBox.Show((string)e.Result);
+            prgBar.Value = 0;
         }
 
         public string CreateOutFile(string in_filename, string extension)
